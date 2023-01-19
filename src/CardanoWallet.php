@@ -47,10 +47,10 @@ class CardanoWallet
 
         return $this->balance;
     }
-    public static function getAssets()
+    public  function getAssets()
     {
 
-        $address = $this->address
+        $address = $this->address;
         $query = "
 		SELECT
 encode(decode(substring(concat(multi_asset.name), 3), 'hex'), 'escape') as asset_name,
@@ -105,17 +105,17 @@ WHERE utxov.stake_address_id = ?
         }
         return $ret;
     }
-}
-// verify a transaction on db sync.
-	private static function verifyTransaction(string $txID, string $paymentAddress = null, array $assets = null): array
-	{
-		$data = [
-			'input' => [
-				'assets' => $assets,
-				'paymentAddress' => $paymentAddress,
-				'txID' => $txID
-			]
-		];
+
+    // verify a transaction on db sync.
+    private  function verifyTransaction(string $txID, string $paymentAddress = null, array $assets = null): array
+    {
+        $data = [
+            'input' => [
+                'assets' => $assets,
+                'paymentAddress' => $paymentAddress,
+                'txID' => $txID
+            ]
+        ];
         /* this part requires teh cli
 		if (!is_null($paymentAddress) && !is_null($assets)) {
 			$data['verifyAsset'] = self::verifyAssets($paymentAddress, $assets);
@@ -126,15 +126,16 @@ WHERE utxov.stake_address_id = ?
 		}
         */
 
-		$query = "SELECT tx.id FROM tx WHERE tx.hash = ?";
-		$results = DB::connection($this->connection)->select($query, ['\x' . $txID]);
+        $query = "SELECT tx.id FROM tx WHERE tx.hash = ?";
+        $results = DB::connection($this->connection)->select($query, ['\x' . $txID]);
 
-		if (empty($results[0]->id)) {
-			$data['error'] = 'Failed to find transaction.';
-			return $data;
-		}
+        if (empty($results[0]->id)) {
+            $data['error'] = 'Failed to find transaction.';
+            return $data;
+        }
 
-		$data['results'] = ['id' => $results[0]->id];
+        $data['results'] = ['id' => $results[0]->id];
 
-		return $data;
-	}
+        return $data;
+    }
+}
